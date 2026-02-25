@@ -1,0 +1,65 @@
+{
+  "products": [
+    {
+      "name": "Google Pixel 9 Pro",
+      "brand": "Google",
+      "category": "mobile-phones",
+      "subcategory": "android",
+      "price": 899,
+      "originalPrice": 999,
+      "image": "https://picsum.photos/seed/pixel9/400/400",
+      "specs": ["6.7\" OLED", "Tensor G4", "256GB"],
+      "detailedSpecs": {
+        "Display": "6.7\" LTPO OLED",
+        "Processor": "Google Tensor G4",
+        "Storage": "256GB",
+        "RAM": "12GB",
+        "Camera": "50MP + 48MP + 48MP",
+        "Battery": "5050mAh"
+      },
+      "rating": 4.6,
+      "inStock": true,
+      "featured": true
+    },
+    {
+      "name": "OnePlus 12",
+      "brand": "OnePlus",
+      "category": "mobile-phones",
+      "subcategory": "android",
+      "price": 799,
+      "originalPrice": 849,
+      "image": "https://picsum.photos/seed/oneplus12/400/400",
+      "specs": ["6.82\" AMOLED", "Snapdragon 8 Gen 3", "512GB"],
+      "detailedSpecs": {
+        "Display": "6.82\" LTPO AMOLED",
+        "Processor": "Snapdragon 8 Gen 3",
+        "Storage": "512GB",
+        "RAM": "16GB",
+        "Camera": "50MP + 64MP + 48MP",
+        "Battery": "5400mAh"
+      },
+      "rating": 4.7,
+      "inStock": true,
+      "featured": false
+    },
+    {
+      "name": "Anker PowerCore 20000",
+      "brand": "Anker",
+      "category": "accessories",
+      "subcategory": "chargers",
+      "price": 49,
+      "originalPrice": 59,
+      "image": "https://picsum.photos/seed/anker20k/400/400",
+      "specs": ["20000mAh", "USB-C PD", "Dual Ports"],
+      "detailedSpecs": {
+        "Capacity": "20000mAh",
+        "Output": "USB-C PD 20W + USB-A 18W",
+        "Input": "USB-C PD 18W",
+        "Weight": "343g"
+      },
+      "rating": 4.8,
+      "inStock": true,
+      "featured": false
+    }
+  ]
+}

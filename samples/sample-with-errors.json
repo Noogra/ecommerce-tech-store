@@ -1,0 +1,40 @@
+{
+  "products": [
+    {
+      "name": "Valid Product",
+      "brand": "Apple",
+      "category": "mobile-phones",
+      "subcategory": "iphone",
+      "price": 999,
+      "image": "https://picsum.photos/seed/valid/400/400",
+      "specs": ["Valid specs"],
+      "rating": 4.5,
+      "inStock": true,
+      "featured": false
+    },
+    {
+      "brand": "Samsung",
+      "category": "mobile-phones",
+      "price": 899
+    },
+    {
+      "name": "Invalid Category Product",
+      "brand": "Xiaomi",
+      "category": "invalid-category",
+      "price": 699
+    },
+    {
+      "name": "Invalid Price Product",
+      "brand": "OnePlus",
+      "category": "mobile-phones",
+      "price": -100
+    },
+    {
+      "name": "Invalid Rating Product",
+      "brand": "Google",
+      "category": "mobile-phones",
+      "price": 799,
+      "rating": 10
+    }
+  ]
+}
