@@ -380,44 +380,54 @@ const products = [
   },
 ];
 
-// Only seed if the database is empty
-const existingCategories = db.prepare('SELECT COUNT(*) as count FROM categories').get();
-if (existingCategories.count > 0) {
-  console.log('Database already seeded, skipping.');
-  process.exit(0);
+export function runSeed() {
+  console.log('[seed] Checking if database needs seeding...');
+
+  const existingCategories = db.prepare('SELECT COUNT(*) as count FROM categories').get();
+  if (existingCategories.count > 0) {
+    console.log('[seed] Database already seeded, skipping.');
+    return;
+  }
+
+  console.log('[seed] Empty database detected, seeding now...');
+
+  const insertCategory = db.prepare(
+    'INSERT INTO categories (name, slug, subcategories) VALUES (?, ?, ?)'
+  );
+  const insertProduct = db.prepare(`
+    INSERT INTO products (name, brand, category, subcategory, price, originalPrice, image, specs, detailedSpecs, rating, inStock, featured, stock_quantity)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  function getStockQuantity(category, subcategory) {
+    if (category === 'mobile-phones') return 15;
+    if (category === 'computers-tablets' && subcategory === 'tablets') return 10;
+    if (category === 'computers-tablets' && subcategory === 'laptops') return 10;
+    if (category === 'accessories') return 25;
+    return 10;
+  }
+
+  const seedAll = db.transaction(() => {
+    for (const cat of categories) {
+      insertCategory.run(cat.name, cat.slug, JSON.stringify(cat.subcategories));
+    }
+    for (const p of products) {
+      const stockQty = getStockQuantity(p.category, p.subcategory);
+      insertProduct.run(
+        p.name, p.brand, p.category, p.subcategory,
+        p.price, p.originalPrice, p.image,
+        JSON.stringify(p.specs), JSON.stringify(p.detailedSpecs),
+        p.rating, p.inStock ? 1 : 0, p.featured ? 1 : 0, stockQty
+      );
+    }
+  });
+
+  seedAll();
+  console.log(`[seed] Done: seeded ${categories.length} categories and ${products.length} products.`);
 }
 
-const insertCategory = db.prepare(
-  'INSERT INTO categories (name, slug, subcategories) VALUES (?, ?, ?)'
-);
-const insertProduct = db.prepare(`
-  INSERT INTO products (name, brand, category, subcategory, price, originalPrice, image, specs, detailedSpecs, rating, inStock, featured, stock_quantity)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`);
-
-// Helper function to determine stock quantity based on category
-function getStockQuantity(category, subcategory) {
-  if (category === 'mobile-phones') return 15;  // Smartphones: 15 units
-  if (category === 'computers-tablets' && subcategory === 'tablets') return 10;  // Tablets: 10 units
-  if (category === 'computers-tablets' && subcategory === 'laptops') return 10;  // Laptops: 10 units
-  if (category === 'accessories') return 25;  // Accessories: 25 units
-  return 10;  // Default: 10 units
+// Allow running directly: node server/seed.js
+import { fileURLToPath } from 'url';
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runSeed();
 }
-
-const seedAll = db.transaction(() => {
-  for (const cat of categories) {
-    insertCategory.run(cat.name, cat.slug, JSON.stringify(cat.subcategories));
-  }
-  for (const p of products) {
-    const stockQty = getStockQuantity(p.category, p.subcategory);
-    insertProduct.run(
-      p.name, p.brand, p.category, p.subcategory,
-      p.price, p.originalPrice, p.image,
-      JSON.stringify(p.specs), JSON.stringify(p.detailedSpecs),
-      p.rating, p.inStock ? 1 : 0, p.featured ? 1 : 0, stockQty
-    );
-  }
-});
-
-seedAll();
-console.log(`Seeded ${categories.length} categories and ${products.length} products.`);

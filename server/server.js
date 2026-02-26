@@ -7,8 +7,18 @@ import authRoutes from './routes/auth.js';
 import orderRoutes from './routes/orders.js';
 import chatRoutes from './routes/chat.js';
 import financeRoutes from './routes/finance.js';
+import { runSeed } from './seed.js';
 
 dotenv.config();
+
+console.log('[startup] PORT:', process.env.PORT || 3001);
+console.log('[startup] DB_PATH:', process.env.DB_PATH || '(not set, using default)');
+
+try {
+  runSeed();
+} catch (err) {
+  console.error('[startup] Seeding failed (non-fatal):', err.message);
+}
 
 // Safety net: prevent unhandled promise rejections from crashing the server
 process.on('unhandledRejection', (reason, promise) => {
