@@ -380,9 +380,12 @@ const products = [
   },
 ];
 
-// Clear and reseed
-db.exec('DELETE FROM products');
-db.exec('DELETE FROM categories');
+// Only seed if the database is empty
+const existingCategories = db.prepare('SELECT COUNT(*) as count FROM categories').get();
+if (existingCategories.count > 0) {
+  console.log('Database already seeded, skipping.');
+  process.exit(0);
+}
 
 const insertCategory = db.prepare(
   'INSERT INTO categories (name, slug, subcategories) VALUES (?, ?, ?)'
