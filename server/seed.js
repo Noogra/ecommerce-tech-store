@@ -28,13 +28,13 @@ const categories = [
 
 const products = [
   {
-    name: 'iPhone 16 Pro Max',
+    name: 'iPhone 17 Pro Max',
     brand: 'Apple',
     category: 'mobile-phones',
     subcategory: 'iphone',
     price: 1199,
     originalPrice: 1299,
-    image: 'https://picsum.photos/seed/iphone16pro/400/400',
+    image: 'https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-cosmic-orange-250909_inline.jpg.large.jpg',
     specs: ['6.9" OLED', 'A18 Pro', '256GB', 'Titanium'],
     detailedSpecs: {
       Display: '6.9" Super Retina XDR OLED, 2868x1320, 120Hz ProMotion',
@@ -53,13 +53,13 @@ const products = [
     featured: true,
   },
   {
-    name: 'iPhone 16',
+    name: 'iPhone 17',
     brand: 'Apple',
     category: 'mobile-phones',
     subcategory: 'iphone',
     price: 799,
     originalPrice: 799,
-    image: 'https://picsum.photos/seed/iphone16/400/400',
+    image: 'https://www.apple.com/newsroom/images/2025/09/apple-debuts-iphone-17/article/Apple-iPhone-17-hero-250909_inline.jpg.large.jpg',
     specs: ['6.1" OLED', 'A18', '128GB', 'Aluminum'],
     detailedSpecs: {
       Display: '6.1" Super Retina XDR OLED, 2556x1179, 60Hz',
@@ -84,7 +84,7 @@ const products = [
     subcategory: 'samsung',
     price: 1299,
     originalPrice: 1399,
-    image: 'https://picsum.photos/seed/galaxys25/400/400',
+    image: 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s25-ultra-sm-s938.jpg',
     specs: ['6.9" AMOLED', 'Snapdragon 8 Elite', '256GB', 'S Pen'],
     detailedSpecs: {
       Display: '6.9" Dynamic AMOLED 2X, 3120x1440, 120Hz LTPO',
@@ -109,7 +109,7 @@ const products = [
     subcategory: 'samsung',
     price: 1799,
     originalPrice: 1899,
-    image: 'https://picsum.photos/seed/zfold6/400/400',
+    image: 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-z-fold6.jpg',
     specs: ['7.6" Foldable', 'Snapdragon 8 Gen 3', '512GB', 'Flex Mode'],
     detailedSpecs: {
       Display: '7.6" Dynamic AMOLED 2X (inner), 6.3" (cover), 120Hz LTPO',
@@ -134,7 +134,7 @@ const products = [
     subcategory: 'xiaomi',
     price: 699,
     originalPrice: 749,
-    image: 'https://picsum.photos/seed/xiaomi15/400/400',
+    image: 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-15-pro.jpg',
     specs: ['6.73" AMOLED', 'Snapdragon 8 Elite', '256GB', '50MP Leica'],
     detailedSpecs: {
       Display: '6.73" LTPO AMOLED, 3200x1440, 120Hz',
@@ -159,7 +159,7 @@ const products = [
     subcategory: 'xiaomi',
     price: 249,
     originalPrice: 279,
-    image: 'https://picsum.photos/seed/redminote14/400/400',
+    image: 'https://fdn2.gsmarena.com/vv/bigpic/xiaomi-redmi-note-14-5g-gl.jpg',
     specs: ['6.67" AMOLED', 'Dimensity 7300', '128GB', '108MP'],
     detailedSpecs: {
       Display: '6.67" AMOLED, 2400x1080, 120Hz',
@@ -184,7 +184,7 @@ const products = [
     subcategory: 'cases',
     price: 49,
     originalPrice: 59,
-    image: 'https://picsum.photos/seed/leathercase/400/400',
+    image: 'https://www.apple.com/newsroom/images/2025/09/apple-unveils-iphone-17-pro-and-iphone-17-pro-max/article/Apple-iPhone-17-Pro-TechWoven-Case-250909_inline.jpg.large.jpg',
     specs: ['Genuine Leather', 'MagSafe', 'All Models', 'Slim Profile'],
     detailedSpecs: {
       Material: 'Full-grain European leather',
@@ -205,7 +205,7 @@ const products = [
     subcategory: 'cases',
     price: 39,
     originalPrice: 39,
-    image: 'https://picsum.photos/seed/clearcase/400/400',
+    image: 'https://www.apple.com/newsroom/images/2025/09/apple-debuts-iphone-17/article/Apple-iPhone-17-Clear-Case-250909_inline.jpg.large.jpg',
     specs: ['Polycarbonate', 'MagSafe', 'Anti-Yellow', 'Drop Tested'],
     detailedSpecs: {
       Material: 'Polycarbonate back, TPU bumper',
@@ -226,7 +226,7 @@ const products = [
     subcategory: 'chargers',
     price: 35,
     originalPrice: 45,
-    image: 'https://picsum.photos/seed/charger65w/400/400',
+    image: 'https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2667111_TD02_V4.jpg?v=1753949913',
     specs: ['65W PD', 'GaN Tech', 'USB-C', 'Universal'],
     detailedSpecs: {
       Output: '65W USB-C Power Delivery 3.0',
@@ -247,7 +247,7 @@ const products = [
     subcategory: 'chargers',
     price: 29,
     originalPrice: 29,
-    image: 'https://picsum.photos/seed/wirelesspad/400/400',
+    image: 'https://www.belkin.com/dw/image/v2/BGBH_PRD/on/demandware.static/-/Sites-master-product-catalog-blk/default/dw69fc41e3/images/hi-res/4/4fd5c4b4a4193dd9_WIA012_BK_BoostCharge_WirelessChargingPad_15W_NPI.GTM_HERO_WEB.jpg',
     specs: ['15W Qi2', 'MagSafe', 'LED Indicator', 'Anti-Slip'],
     detailedSpecs: {
       Output: '15W Qi2 / MagSafe, 5W for AirPods',
@@ -268,7 +268,7 @@ const products = [
     subcategory: 'headphones',
     price: 249,
     originalPrice: 279,
-    image: 'https://picsum.photos/seed/airpodspro3/400/400',
+    image: 'https://www.apple.com/newsroom/images/2025/09/introducing-airpods-pro-3-the-ultimate-audio-experience/article/Apple-AirPods-Pro-3-hero-250909_inline.jpg.large.jpg',
     specs: ['ANC', 'Spatial Audio', 'H3 Chip', 'USB-C'],
     detailedSpecs: {
       Driver: 'Custom Apple H3 chip, adaptive EQ',
@@ -289,7 +289,7 @@ const products = [
     subcategory: 'headphones',
     price: 349,
     originalPrice: 399,
-    image: 'https://picsum.photos/seed/sonyxm6/400/400',
+    image: 'https://fdn.gsmarena.com/imgroot/news/22/10/wh-1000xm5-review/-1220x526/gsmarena_000.jpg',
     specs: ['ANC', '40h Battery', 'LDAC', 'Multipoint'],
     detailedSpecs: {
       Driver: '40mm, HD Noise Cancelling Processor V3',
@@ -310,7 +310,7 @@ const products = [
     subcategory: 'tablets',
     price: 1099,
     originalPrice: 1099,
-    image: 'https://picsum.photos/seed/ipadprom4/400/400',
+    image: 'https://www.apple.com/newsroom/images/2024/05/apple-unveils-stunning-new-ipad-pro-with-m4-chip-and-apple-pencil-pro/article/Apple-iPad-Pro-hero-240507_big.jpg.large.jpg',
     specs: ['11" Liquid Retina', 'M4 Chip', '256GB', 'Apple Pencil Pro'],
     detailedSpecs: {
       Display: '11" Ultra Retina XDR, Tandem OLED, 2420x1668, 120Hz ProMotion',
@@ -335,7 +335,7 @@ const products = [
     subcategory: 'laptops',
     price: 1199,
     originalPrice: 1299,
-    image: 'https://picsum.photos/seed/macbookairm4/400/400',
+    image: 'https://www.apple.com/newsroom/images/2025/03/apple-introduces-the-new-macbook-air-with-the-m4-chip-and-a-sky-blue-color/article/Apple-MacBook-Air-hero-250305_big.jpg.large.jpg',
     specs: ['13.6" Liquid Retina', 'M4', '16GB RAM', '512GB SSD'],
     detailedSpecs: {
       Display: '13.6" Liquid Retina, 2560x1664, 500 nits, P3 wide color',
@@ -360,7 +360,7 @@ const products = [
     subcategory: 'tablets',
     price: 849,
     originalPrice: 899,
-    image: 'https://picsum.photos/seed/galaxytabs10/400/400',
+    image: 'https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-tab-s10-ultra.jpg',
     specs: ['12.4" AMOLED', 'Dimensity 9300+', '256GB', 'S Pen Included'],
     detailedSpecs: {
       Display: '12.4" Dynamic AMOLED 2X, 2800x1752, 120Hz',
@@ -383,13 +383,21 @@ const products = [
 export function runSeed() {
   console.log('[seed] Checking if database needs seeding...');
 
-  const existingCategories = db.prepare('SELECT COUNT(*) as count FROM categories').get();
-  if (existingCategories.count > 0) {
-    console.log('[seed] Database already seeded, skipping.');
-    return;
+  const forceReseed = process.env.FORCE_RESEED === 'true';
+
+  if (forceReseed) {
+    console.log('[seed] FORCE_RESEED=true — clearing existing products and categories...');
+    db.exec('DELETE FROM products');
+    db.exec('DELETE FROM categories');
+  } else {
+    const existingCategories = db.prepare('SELECT COUNT(*) as count FROM categories').get();
+    if (existingCategories.count > 0) {
+      console.log('[seed] Database already seeded, skipping.');
+      return;
+    }
   }
 
-  console.log('[seed] Empty database detected, seeding now...');
+  console.log('[seed] Seeding database...');
 
   const insertCategory = db.prepare(
     'INSERT INTO categories (name, slug, subcategories) VALUES (?, ?, ?)'
