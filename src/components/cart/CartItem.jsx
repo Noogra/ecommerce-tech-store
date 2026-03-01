@@ -1,8 +1,10 @@
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
+import { useTranslation } from 'react-i18next';
 
 export default function CartItem({ item }) {
   const { dispatch } = useCart();
+  const { t } = useTranslation();
 
   return (
     <div className="flex gap-4 py-4 border-b border-gray-100">
@@ -50,7 +52,7 @@ export default function CartItem({ item }) {
             <button
               onClick={() => dispatch({ type: 'REMOVE_FROM_CART', payload: item.id })}
               className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-              aria-label="Remove item"
+              aria-label={t('cart.removeItem')}
             >
               <Trash2 className="w-4 h-4" />
             </button>

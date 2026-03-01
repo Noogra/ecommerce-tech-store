@@ -1,9 +1,11 @@
 import { Star, ShoppingCart, Check } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCart } from '../../hooks/useCart';
 
 export default function ProductCard({ product }) {
+  const { t } = useTranslation();
   const { dispatch } = useCart();
   const [added, setAdded] = useState(false);
   const hasDiscount = product.originalPrice > product.price;
@@ -26,29 +28,29 @@ export default function ProductCard({ product }) {
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {hasDiscount && (
-          <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+          <span className="absolute top-2 start-2 bg-red-500 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full">
             -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
           </span>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <p className="text-xs font-medium text-muted uppercase tracking-wider">{product.brand}</p>
-        <h3 className="text-sm font-semibold text-primary mt-1 leading-snug">{product.name}</h3>
+      <div className="p-3 sm:p-4">
+        <p className="text-[10px] sm:text-xs font-medium text-muted uppercase tracking-wider">{product.brand}</p>
+        <h3 className="text-xs sm:text-sm font-semibold text-primary mt-1 leading-snug line-clamp-2">{product.name}</h3>
 
         {/* Rating */}
-        <div className="flex items-center gap-1 mt-2">
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-          <span className="text-xs font-medium text-gray-700">{product.rating}</span>
+        <div className="flex items-center gap-1 mt-1.5">
+          <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 text-amber-400" />
+          <span className="text-[10px] sm:text-xs font-medium text-gray-700">{product.rating}</span>
         </div>
 
-        {/* Specs */}
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {product.specs.slice(0, 3).map((spec) => (
+        {/* Specs — hide 3rd on mobile */}
+        <div className="flex flex-wrap gap-1 mt-2">
+          {product.specs.slice(0, 3).map((spec, i) => (
             <span
               key={spec}
-              className="text-[11px] text-muted bg-gray-50 px-2 py-0.5 rounded-md"
+              className={`text-[10px] text-muted bg-gray-50 px-1.5 py-0.5 rounded-md ${i >= 2 ? 'hidden sm:inline-block' : ''}`}
             >
               {spec}
             </span>
@@ -56,11 +58,11 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Price + Add to Cart */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
-          <div>
-            <span className="text-lg font-bold text-primary">${product.price.toLocaleString()}</span>
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 gap-2">
+          <div className="min-w-0">
+            <span className="text-sm sm:text-lg font-bold text-primary">${product.price.toLocaleString()}</span>
             {hasDiscount && (
-              <span className="text-sm text-muted line-through ml-2">
+              <span className="hidden sm:inline text-sm text-muted line-through ms-1.5">
                 ${product.originalPrice.toLocaleString()}
               </span>
             )}
@@ -68,12 +70,12 @@ export default function ProductCard({ product }) {
           <button
             onClick={handleAdd}
             disabled={!product.inStock}
-            className={`p-2.5 rounded-xl transition-all ${
+            className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl transition-all flex-shrink-0 ${
               added
                 ? 'bg-green-500 text-white'
                 : 'bg-accent hover:bg-accent-dark text-white hover:shadow-md'
             } disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed`}
-            aria-label={added ? 'Added to cart' : 'Add to cart'}
+            aria-label={added ? t('product.addedToCart') : t('product.addToCart')}
           >
             {added ? <Check className="w-4 h-4" /> : <ShoppingCart className="w-4 h-4" />}
           </button>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 function generateSlug(name) {
   return name
@@ -16,6 +17,7 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
   const [subcategories, setSubcategories] = useState(category?.subcategories || []);
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
   const [autoSlug, setAutoSlug] = useState(!category);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (autoSlug && name) {
@@ -30,7 +32,7 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
     const existing = subcategories.find(s => s.slug === subSlug);
 
     if (existing) {
-      alert('A subcategory with this name already exists');
+      alert(t('categoryForm.duplicateSub'));
       return;
     }
 
@@ -46,12 +48,12 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
     e.preventDefault();
 
     if (!name.trim()) {
-      alert('Category name is required');
+      alert(t('categoryForm.nameRequired'));
       return;
     }
 
     if (!slug.trim()) {
-      alert('Slug is required');
+      alert(t('categoryForm.slugRequired'));
       return;
     }
 
@@ -64,7 +66,7 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white">
           <h2 className="text-xl font-semibold text-primary">
-            {category ? 'Edit Category' : 'Add New Category'}
+            {category ? t('categoryForm.editTitle') : t('categoryForm.addTitle')}
           </h2>
           <button
             onClick={onCancel}
@@ -79,14 +81,14 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
           {/* Category Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category Name <span className="text-red-500">*</span>
+              {t('categoryForm.nameLabel')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-              placeholder="e.g., Smart Watches"
+              placeholder={t('categoryForm.namePlaceholder')}
               disabled={isSubmitting}
               required
             />
@@ -95,7 +97,7 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
           {/* Slug */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Slug <span className="text-red-500">*</span>
+              {t('categoryForm.slugLabel')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -105,19 +107,19 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
                 setAutoSlug(false);
               }}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent font-mono"
-              placeholder="e.g., smart-watches"
+              placeholder={t('categoryForm.slugPlaceholder')}
               disabled={isSubmitting}
               required
             />
             <p className="text-xs text-muted mt-1.5">
-              {autoSlug ? 'Auto-generated from name' : 'Custom slug (lowercase, hyphens only)'}
+              {autoSlug ? t('categoryForm.autoSlug') : t('categoryForm.customSlug')}
             </p>
           </div>
 
           {/* Subcategories */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subcategories
+              {t('categoryForm.subcategories')}
             </label>
 
             {/* Existing subcategories */}
@@ -158,7 +160,7 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
                   }
                 }}
                 className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-                placeholder="Add subcategory..."
+                placeholder={t('categoryForm.addSubPlaceholder')}
                 disabled={isSubmitting}
               />
               <button
@@ -168,7 +170,7 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
                 disabled={isSubmitting}
               >
                 <Plus className="w-4 h-4" />
-                Add
+                {t('categoryForm.addBtn')}
               </button>
             </div>
           </div>
@@ -181,14 +183,18 @@ export default function CategoryForm({ category, onSave, onCancel, isSubmitting 
               className="px-5 py-2.5 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
               disabled={isSubmitting}
             >
-              Cancel
+              {t('categoryForm.cancel')}
             </button>
             <button
               type="submit"
               className="px-5 py-2.5 bg-accent hover:bg-accent-dark text-white font-semibold rounded-xl transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Saving...' : category ? 'Update Category' : 'Create Category'}
+              {isSubmitting
+                ? t('categoryForm.saving')
+                : category
+                  ? t('categoryForm.updateBtn')
+                  : t('categoryForm.createBtn')}
             </button>
           </div>
         </form>

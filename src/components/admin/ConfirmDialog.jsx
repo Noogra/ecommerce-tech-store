@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ConfirmDialog({
   isOpen,
@@ -11,6 +12,8 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel
 }) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -66,7 +69,7 @@ export default function ConfirmDialog({
             <button
               onClick={onCancel}
               className="p-2 text-gray-400 hover:text-primary rounded-lg transition-colors"
-              aria-label="Close dialog"
+              aria-label={t('confirmDialog.closeDialog')}
             >
               <X className="w-5 h-5" />
             </button>

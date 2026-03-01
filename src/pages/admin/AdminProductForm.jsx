@@ -4,6 +4,7 @@ import { Save, ArrowLeft } from 'lucide-react';
 import { fetchProduct, createProduct, updateProduct } from '../../api/products';
 import { fetchCategories } from '../../api/categories';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const emptyForm = {
   name: '',
@@ -26,6 +27,7 @@ export default function AdminProductForm() {
   const isEdit = Boolean(id);
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const [form, setForm] = useState(emptyForm);
   const [categories, setCategories] = useState([]);
@@ -81,7 +83,7 @@ export default function AdminProductForm() {
       try {
         parsedSpecs = JSON.parse(form.detailedSpecs);
       } catch {
-        throw new Error('Detailed Specs must be valid JSON');
+        throw new Error(t('productForm.detailedSpecsError'));
       }
 
       const payload = {
@@ -130,18 +132,18 @@ export default function AdminProductForm() {
         onClick={() => navigate('/admin/products')}
         className="inline-flex items-center gap-2 text-muted hover:text-primary text-sm mb-6 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Products
+        <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+        {t('productForm.backToProducts')}
       </button>
 
       <h1 className="text-2xl font-bold text-primary mb-8">
-        {isEdit ? 'Edit Product' : 'Add New Product'}
+        {isEdit ? t('productForm.editTitle') : t('productForm.addTitle')}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Name *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.name')} *</label>
           <input
             name="name"
             value={form.name}
@@ -154,7 +156,7 @@ export default function AdminProductForm() {
 
         {/* Brand */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Brand *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.brand')} *</label>
           <input
             name="brand"
             value={form.brand}
@@ -168,7 +170,7 @@ export default function AdminProductForm() {
         {/* Category & Subcategory */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Category *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.category')} *</label>
             <select
               name="category"
               value={form.category}
@@ -176,21 +178,21 @@ export default function AdminProductForm() {
               required
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white"
             >
-              <option value="">Select category</option>
+              <option value="">{t('productForm.selectCategory')}</option>
               {categories.map(c => (
                 <option key={c.slug} value={c.slug}>{c.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Subcategory</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.subcategory')}</label>
             <select
               name="subcategory"
               value={form.subcategory}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent bg-white"
             >
-              <option value="">None</option>
+              <option value="">{t('productForm.noneSubcategory')}</option>
               {selectedCategory?.subcategories.map(s => (
                 <option key={s.slug} value={s.slug}>{s.name}</option>
               ))}
@@ -201,7 +203,7 @@ export default function AdminProductForm() {
         {/* Price */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Price ($) *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.price')} *</label>
             <input
               name="price"
               type="number"
@@ -215,7 +217,7 @@ export default function AdminProductForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Original Price ($)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.originalPrice')}</label>
             <input
               name="originalPrice"
               type="number"
@@ -224,14 +226,14 @@ export default function AdminProductForm() {
               value={form.originalPrice}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-              placeholder="1099 (for discount display)"
+              placeholder="1099"
             />
           </div>
         </div>
 
         {/* Image URL */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Image URL</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.imageUrl')}</label>
           <input
             name="image"
             value={form.image}
@@ -244,7 +246,7 @@ export default function AdminProductForm() {
         {/* Rating & Stock Quantity */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Rating (0-5)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.rating')}</label>
             <input
               name="rating"
               type="number"
@@ -258,7 +260,7 @@ export default function AdminProductForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Stock Quantity *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('productForm.stock')} *</label>
             <input
               name="stock_quantity"
               type="number"
@@ -276,7 +278,7 @@ export default function AdminProductForm() {
         {/* Specs (comma-separated) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Quick Specs <span className="text-muted font-normal">(comma-separated)</span>
+            {t('productForm.quickSpecs')} <span className="text-muted font-normal">{t('productForm.quickSpecsSub')}</span>
           </label>
           <input
             name="specs"
@@ -290,7 +292,7 @@ export default function AdminProductForm() {
         {/* Detailed Specs (JSON) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Detailed Specs <span className="text-muted font-normal">(JSON)</span>
+            {t('productForm.detailedSpecs')} <span className="text-muted font-normal">{t('productForm.detailedSpecsSub')}</span>
           </label>
           <textarea
             name="detailedSpecs"
@@ -312,7 +314,7 @@ export default function AdminProductForm() {
               onChange={handleChange}
               className="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent"
             />
-            <span className="text-sm font-medium text-gray-700">In Stock</span>
+            <span className="text-sm font-medium text-gray-700">{t('productForm.inStock')}</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -322,7 +324,7 @@ export default function AdminProductForm() {
               onChange={handleChange}
               className="w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent"
             />
-            <span className="text-sm font-medium text-gray-700">Featured</span>
+            <span className="text-sm font-medium text-gray-700">{t('productForm.featured')}</span>
           </label>
         </div>
 
@@ -338,7 +340,11 @@ export default function AdminProductForm() {
           className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-semibold px-8 py-3 rounded-xl transition-colors disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
-          {saving ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
+          {saving
+            ? t('productForm.saving')
+            : isEdit
+              ? t('productForm.updateBtn')
+              : t('productForm.createBtn')}
         </button>
       </form>
     </div>

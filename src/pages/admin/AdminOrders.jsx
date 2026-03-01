@@ -4,6 +4,7 @@ import { fetchOrders } from '../../api/orders';
 import { useAuth } from '../../context/AuthContext';
 import OrderStatusBadge from '../../components/admin/OrderStatusBadge';
 import OrderDetailModal from '../../components/admin/OrderDetailModal';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
@@ -12,6 +13,7 @@ export default function AdminOrders() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const loadOrders = () => {
     setLoading(true);
@@ -34,18 +36,10 @@ export default function AdminOrders() {
   });
 
   const tabs = [
-    { value: 'all', label: 'All Orders', count: orders.length },
-    { value: 'New', label: 'New', count: orders.filter((o) => o.status === 'New').length },
-    {
-      value: 'Processing',
-      label: 'Processing',
-      count: orders.filter((o) => o.status === 'Processing').length,
-    },
-    {
-      value: 'Completed',
-      label: 'Completed',
-      count: orders.filter((o) => o.status === 'Completed').length,
-    },
+    { value: 'all', label: t('adminOrders.allOrders'), count: orders.length },
+    { value: 'New', label: t('orderStatus.New'), count: orders.filter((o) => o.status === 'New').length },
+    { value: 'Processing', label: t('orderStatus.Processing'), count: orders.filter((o) => o.status === 'Processing').length },
+    { value: 'Completed', label: t('orderStatus.Completed'), count: orders.filter((o) => o.status === 'Completed').length },
   ];
 
   return (
@@ -53,8 +47,8 @@ export default function AdminOrders() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Orders</h1>
-          <p className="text-sm text-muted mt-1">Manage customer orders and track fulfillment</p>
+          <h1 className="text-2xl font-bold text-primary">{t('adminOrders.title')}</h1>
+          <p className="text-sm text-muted mt-1">{t('adminOrders.subtitle')}</p>
         </div>
       </div>
 
@@ -72,7 +66,7 @@ export default function AdminOrders() {
           >
             {tab.label}
             <span
-              className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+              className={`ms-2 px-2 py-0.5 rounded-full text-xs ${
                 statusFilter === tab.value ? 'bg-white/20' : 'bg-gray-100'
               }`}
             >
@@ -85,13 +79,13 @@ export default function AdminOrders() {
       {/* Search */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by order number, email, or customer name..."
+            placeholder={t('adminOrders.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+            className="w-full ps-12 pe-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
           />
         </div>
       </div>
@@ -107,11 +101,11 @@ export default function AdminOrders() {
         ) : filteredOrders.length === 0 ? (
           <div className="p-12 text-center text-muted">
             <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-            <p className="text-lg font-medium">No orders found</p>
+            <p className="text-lg font-medium">{t('adminOrders.noOrders')}</p>
             <p className="text-sm mt-1">
               {searchQuery
-                ? 'Try a different search term'
-                : 'Orders will appear here when customers place them'}
+                ? t('adminOrders.trySearch')
+                : t('adminOrders.awaitingOrders')}
             </p>
           </div>
         ) : (
@@ -119,26 +113,26 @@ export default function AdminOrders() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Order
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colOrder')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Customer
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colCustomer')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Items
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colItems')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Total
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colTotal')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Status
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colStatus')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Date
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colDate')}
                   </th>
-                  <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Actions
+                  <th className="text-end text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('adminOrders.colActions')}
                   </th>
                 </tr>
               </thead>
@@ -157,7 +151,7 @@ export default function AdminOrders() {
                           {order.orderNumber}
                         </span>
                         {!order.isRead && (
-                          <span className="w-2 h-2 rounded-full bg-blue-500" title="Unread" />
+                          <span className="w-2 h-2 rounded-full bg-blue-500" title={t('adminOrders.unread')} />
                         )}
                       </div>
                     </td>
@@ -170,7 +164,9 @@ export default function AdminOrders() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-muted">{order.itemCount} items</span>
+                      <span className="text-sm text-muted">
+                        {t('adminOrders.itemCount', { count: order.itemCount })}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm font-semibold text-primary">
@@ -197,7 +193,7 @@ export default function AdminOrders() {
                             setSelectedOrder(order);
                           }}
                           className="p-2 text-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
-                          title="View Details"
+                          title={t('adminOrders.viewDetails')}
                         >
                           <Eye className="w-4 h-4" />
                         </button>

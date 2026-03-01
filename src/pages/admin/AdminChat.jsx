@@ -3,21 +3,23 @@ import { Send, FileText, RotateCcw, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { sendChatMessage } from '../../api/chat';
 import ChatMessage from '../../components/admin/ChatMessage';
-
-const QUICK_PROMPTS = [
-  { label: 'Best sellers', prompt: 'What are my best-selling products?' },
-  { label: 'Low stock', prompt: 'Which products need restocking urgently?' },
-  { label: 'Pricing tips', prompt: 'Suggest pricing changes based on stock levels and sales data.' },
-  { label: 'Sales trends', prompt: 'How are my sales trending over the past week?' },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function AdminChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { token } = useAuth();
+  const { t } = useTranslation();
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  const QUICK_PROMPTS = [
+    { labelKey: 'chat.promptBestSellers', promptKey: 'chat.promptBestSellersQ' },
+    { labelKey: 'chat.promptLowStock', promptKey: 'chat.promptLowStockQ' },
+    { labelKey: 'chat.promptPricing', promptKey: 'chat.promptPricingQ' },
+    { labelKey: 'chat.promptTrends', promptKey: 'chat.promptTrendsQ' },
+  ];
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,7 +34,7 @@ export default function AdminChat() {
     const userMsg = {
       id: Date.now(),
       role: 'user',
-      content: isDailySummary ? 'Generate Daily Summary' : userContent,
+      content: isDailySummary ? t('chat.generateSummary') : userContent,
     };
 
     const assistantMsg = {
@@ -66,7 +68,7 @@ export default function AdminChat() {
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantMsg.id
-            ? { ...m, content: `**Error:** ${err.message}`, isStreaming: false }
+            ? { ...m, content: t('chat.error', { message: err.message }), isStreaming: false }
             : m
         )
       );
@@ -94,10 +96,10 @@ export default function AdminChat() {
         <div>
           <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-accent" />
-            AI Store Assistant
+            {t('chat.title')}
           </h1>
           <p className="text-sm text-muted mt-1">
-            Ask about sales, inventory, pricing, and store performance
+            {t('chat.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -107,14 +109,14 @@ export default function AdminChat() {
             className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-primary font-medium text-sm px-4 py-2.5 rounded-xl border border-gray-200 transition-colors disabled:opacity-50"
           >
             <FileText className="w-4 h-4" />
-            Daily Summary
+            {t('chat.dailySummary')}
           </button>
           {messages.length > 0 && (
             <button
               onClick={handleClearChat}
               disabled={isLoading}
               className="inline-flex items-center gap-2 text-muted hover:text-primary text-sm px-3 py-2.5 rounded-xl hover:bg-gray-100 transition-colors disabled:opacity-50"
-              title="Clear chat"
+              title={t('chat.clearChat')}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -130,26 +132,25 @@ export default function AdminChat() {
             <div className="w-16 h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4">
               <Sparkles className="w-8 h-8" />
             </div>
-            <h2 className="text-lg font-semibold text-primary mb-2">How can I help?</h2>
+            <h2 className="text-lg font-semibold text-primary mb-2">{t('chat.greeting')}</h2>
             <p className="text-sm text-muted mb-6 max-w-md">
-              I have access to your store's products, inventory, orders, and sales data. Ask me
-              anything about your business performance.
+              {t('chat.greetingSub')}
             </p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg">
               {QUICK_PROMPTS.map((qp) => (
                 <button
-                  key={qp.label}
-                  onClick={() => handleSend(qp.prompt)}
+                  key={qp.labelKey}
+                  onClick={() => handleSend(t(qp.promptKey))}
                   className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-primary hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
                 >
-                  {qp.label}
+                  {t(qp.labelKey)}
                 </button>
               ))}
               <button
                 onClick={() => handleSend(null, true)}
                 className="px-4 py-2 bg-accent/10 border border-accent/20 rounded-xl text-sm text-accent font-medium hover:bg-accent/20 transition-colors"
               >
-                Daily Summary
+                {t('chat.dailySummary')}
               </button>
             </div>
           </div>
@@ -174,11 +175,11 @@ export default function AdminChat() {
         <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
           {QUICK_PROMPTS.map((qp) => (
             <button
-              key={qp.label}
-              onClick={() => handleSend(qp.prompt)}
+              key={qp.labelKey}
+              onClick={() => handleSend(t(qp.promptKey))}
               className="flex-shrink-0 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-xs text-muted hover:text-primary hover:border-gray-300 transition-colors"
             >
-              {qp.label}
+              {t(qp.labelKey)}
             </button>
           ))}
         </div>
@@ -191,7 +192,7 @@ export default function AdminChat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about your store..."
+          placeholder={t('chat.inputPlaceholder')}
           disabled={isLoading}
           rows={1}
           className="flex-1 resize-none text-sm text-primary placeholder:text-gray-400 focus:outline-none disabled:bg-transparent"

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Tag, PlusCircle, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Tag, X } from 'lucide-react';
 import { fetchCategories, createCategory, updateCategory, deleteCategory, addSubcategory, deleteSubcategory } from '../../api/categories';
 import { useAuth } from '../../context/AuthContext';
 import CategoryForm from '../../components/admin/CategoryForm';
 import ConfirmDialog from '../../components/admin/ConfirmDialog';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -14,6 +15,7 @@ export default function AdminCategories() {
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, category: null, force: false });
   const [toast, setToast] = useState(null);
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const loadCategories = () => {
     setLoading(true);
@@ -35,10 +37,10 @@ export default function AdminCategories() {
     try {
       if (editingCategory) {
         await updateCategory(editingCategory.id, data, token);
-        showToast('Category updated successfully');
+        showToast(t('adminCategories.updateSuccess'));
       } else {
         await createCategory(data, token);
-        showToast('Category created successfully');
+        showToast(t('adminCategories.createSuccess'));
       }
       loadCategories();
       setShowForm(false);
@@ -57,15 +59,14 @@ export default function AdminCategories() {
     try {
       const result = await deleteCategory(category.id, token, force);
       if (result.productsDeleted > 0) {
-        showToast(`Category and ${result.productsDeleted} products deleted`);
+        showToast(t('adminCategories.deletedWithProducts', { count: result.productsDeleted }));
       } else {
-        showToast('Category deleted successfully');
+        showToast(t('adminCategories.deleteSuccess'));
       }
       loadCategories();
       setDeleteDialog({ isOpen: false, category: null, force: false });
     } catch (err) {
       if (err.message.includes('Cannot delete category with')) {
-        // Show force delete option
         setDeleteDialog({ ...deleteDialog, force: true });
       } else {
         showToast(err.message, 'error');
@@ -75,13 +76,13 @@ export default function AdminCategories() {
   };
 
   const handleDeleteSubcategory = async (category, subcategory) => {
-    if (!window.confirm(`Delete subcategory "${subcategory.name}"? Products using this subcategory will have it removed.`)) {
+    if (!window.confirm(t('adminCategories.deleteSubConfirm', { name: subcategory.name }))) {
       return;
     }
 
     try {
       const result = await deleteSubcategory(category.id, subcategory.slug, token);
-      showToast(`Subcategory deleted. ${result.productsAffected} products updated.`);
+      showToast(t('adminCategories.subDeleteSuccess', { count: result.productsAffected }));
       loadCategories();
     } catch (err) {
       showToast(err.message, 'error');
@@ -92,8 +93,8 @@ export default function AdminCategories() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Categories</h1>
-          <p className="text-sm text-muted mt-1">Manage product categories and subcategories</p>
+          <h1 className="text-2xl font-bold text-primary">{t('adminCategories.title')}</h1>
+          <p className="text-sm text-muted mt-1">{t('adminCategories.subtitle')}</p>
         </div>
         <button
           onClick={() => {
@@ -103,7 +104,7 @@ export default function AdminCategories() {
           className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-medium text-sm px-5 py-2.5 rounded-xl transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Add Category
+          {t('adminCategories.addBtn')}
         </button>
       </div>
 
@@ -117,8 +118,8 @@ export default function AdminCategories() {
         ) : categories.length === 0 ? (
           <div className="p-12 text-center text-muted">
             <Tag className="w-12 h-12 mx-auto mb-4 text-gray-200" />
-            <p className="text-lg font-medium">No categories yet</p>
-            <p className="text-sm mt-1">Create your first category to organize products.</p>
+            <p className="text-lg font-medium">{t('adminCategories.noCategories')}</p>
+            <p className="text-sm mt-1">{t('adminCategories.noCategoriesSub')}</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
@@ -136,14 +137,14 @@ export default function AdminCategories() {
                         setShowForm(true);
                       }}
                       className="p-2 text-gray-400 hover:text-accent rounded-lg transition-colors"
-                      title="Edit category"
+                      title={t('adminCategories.editTitle')}
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setDeleteDialog({ isOpen: true, category: cat, force: false })}
                       className="p-2 text-gray-400 hover:text-red-500 rounded-lg transition-colors"
-                      title="Delete category"
+                      title={t('adminCategories.deleteTitle')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -162,7 +163,7 @@ export default function AdminCategories() {
                         <button
                           onClick={() => handleDeleteSubcategory(cat, sub)}
                           className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
-                          title="Remove subcategory"
+                          title={t('adminCategories.removeSubTitle')}
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -170,7 +171,7 @@ export default function AdminCategories() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted italic">No subcategories</p>
+                  <p className="text-sm text-muted italic">{t('adminCategories.noSubcategories')}</p>
                 )}
               </div>
             ))}
@@ -194,13 +195,13 @@ export default function AdminCategories() {
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteDialog.isOpen}
-        title={deleteDialog.force ? 'Force Delete Category?' : 'Delete Category?'}
+        title={deleteDialog.force ? t('adminCategories.forceDeleteConfirmTitle') : t('adminCategories.deleteConfirmTitle')}
         message={
           deleteDialog.force
-            ? `This category has products. Deleting it will also delete all associated products. This cannot be undone.`
-            : `Are you sure you want to delete "${deleteDialog.category?.name}"? This cannot be undone.`
+            ? t('adminCategories.forceDeleteConfirmMsg')
+            : t('adminCategories.deleteConfirmMsg', { name: deleteDialog.category?.name })
         }
-        confirmText={deleteDialog.force ? 'Delete Anyway' : 'Delete'}
+        confirmText={deleteDialog.force ? t('adminCategories.forceDeleteBtn') : t('adminCategories.deleteBtn')}
         confirmVariant="danger"
         onConfirm={() => handleDelete(deleteDialog.force)}
         onCancel={() => setDeleteDialog({ isOpen: false, category: null, force: false })}
@@ -208,7 +209,7 @@ export default function AdminCategories() {
 
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom duration-300">
+        <div className="fixed bottom-6 end-6 z-50 animate-in slide-in-from-bottom duration-300">
           <div
             className={`px-6 py-4 rounded-xl shadow-lg ${
               toast.type === 'error'

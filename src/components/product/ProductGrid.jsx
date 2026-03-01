@@ -2,13 +2,15 @@ import { useState, useMemo } from 'react';
 import ProductCard from './ProductCard';
 import FilterBar from './FilterBar';
 import { PackageSearch } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductGrid({ products, subcategories = [], initialFilter = 'all' }) {
   const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [sortBy, setSortBy] = useState('featured');
+  const { t } = useTranslation();
 
   const filters = [
-    { name: 'All', slug: 'all' },
+    { name: t('grid.all'), slug: 'all' },
     ...subcategories.map(sub => ({ name: sub.name, slug: sub.slug })),
   ];
 
@@ -61,18 +63,18 @@ export default function ProductGrid({ products, subcategories = [], initialFilte
             onChange={(e) => setSortBy(e.target.value)}
             className="px-4 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
           >
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A–Z</option>
-            <option value="name-desc">Name: Z–A</option>
-            <option value="rating">Top Rated</option>
+            <option value="featured">{t('grid.featured')}</option>
+            <option value="price-asc">{t('grid.priceLowHigh')}</option>
+            <option value="price-desc">{t('grid.priceHighLow')}</option>
+            <option value="name-asc">{t('grid.nameAZ')}</option>
+            <option value="name-desc">{t('grid.nameZA')}</option>
+            <option value="rating">{t('grid.topRated')}</option>
           </select>
         </div>
       )}
 
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {filtered.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -80,8 +82,8 @@ export default function ProductGrid({ products, subcategories = [], initialFilte
       ) : (
         <div className="text-center py-16">
           <PackageSearch className="w-16 h-16 text-gray-200 mx-auto" />
-          <p className="text-lg font-medium text-primary mt-4">No products found</p>
-          <p className="text-sm text-muted mt-1">Try a different filter</p>
+          <p className="text-lg font-medium text-primary mt-4">{t('grid.noProducts')}</p>
+          <p className="text-sm text-muted mt-1">{t('grid.tryFilter')}</p>
         </div>
       )}
     </div>

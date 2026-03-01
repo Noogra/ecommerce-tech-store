@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, File, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function FileUpload({
   onFileSelect,
@@ -11,6 +12,7 @@ export default function FileUpload({
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
+  const { t } = useTranslation();
 
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
 
@@ -21,13 +23,13 @@ export default function FileUpload({
     const extension = '.' + file.name.split('.').pop().toLowerCase();
     const acceptedTypes = accept.split(',').map(t => t.trim());
     if (!acceptedTypes.includes(extension)) {
-      setError(`File type must be ${accept}`);
+      setError(t('fileUpload.wrongType', { accept }));
       return false;
     }
 
     // Check file size
     if (file.size > maxSizeBytes) {
-      setError(`File size must be less than ${maxSizeMB}MB`);
+      setError(t('fileUpload.tooLarge', { maxSizeMB }));
       return false;
     }
 
@@ -140,14 +142,14 @@ export default function FileUpload({
           <>
             <Upload className={`w-12 h-12 mx-auto mb-4 ${error ? 'text-red-400' : 'text-gray-300'}`} />
             <p className="text-base font-medium text-primary mb-1">
-              {isDragging ? 'Drop file here' : 'Drag & drop your file here'}
+              {isDragging ? t('fileUpload.dropHere') : t('fileUpload.dragDrop')}
             </p>
-            <p className="text-sm text-muted mb-4">or</p>
+            <p className="text-sm text-muted mb-4">{t('fileUpload.or')}</p>
             <span className="inline-block px-5 py-2.5 bg-accent hover:bg-accent-dark text-white font-medium text-sm rounded-xl transition-colors">
-              Browse Files
+              {t('fileUpload.browse')}
             </span>
             <p className="text-xs text-muted mt-4">
-              Accepts {accept} files up to {maxSizeMB}MB
+              {t('fileUpload.accepts', { accept, maxSizeMB })}
             </p>
           </>
         )}

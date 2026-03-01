@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { updateProductStock } from '../../api/products';
+import { useTranslation } from 'react-i18next';
 
 export default function EditableStockCell({ productId, initialValue, onSave }) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialValue);
   const [saving, setSaving] = useState(false);
   const { token } = useAuth();
+  const { t } = useTranslation();
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -31,14 +33,14 @@ export default function EditableStockCell({ productId, initialValue, onSave }) {
 
     // Validation
     if (isNaN(numValue) || numValue < 0) {
-      alert('Stock quantity must be a non-negative number');
+      alert(t('editStock.notNegative'));
       setValue(initialValue);
       setIsEditing(false);
       return;
     }
 
     if (numValue > 10000) {
-      alert('Stock quantity cannot exceed 10,000');
+      alert(t('editStock.tooLarge'));
       setValue(initialValue);
       setIsEditing(false);
       return;
@@ -50,7 +52,7 @@ export default function EditableStockCell({ productId, initialValue, onSave }) {
       setIsEditing(false);
       if (onSave) onSave();
     } catch (error) {
-      alert(error.message || 'Failed to update stock');
+      alert(error.message || t('editStock.failed'));
       setValue(initialValue);
       setIsEditing(false);
     } finally {
@@ -95,7 +97,7 @@ export default function EditableStockCell({ productId, initialValue, onSave }) {
     <button
       onClick={() => setIsEditing(true)}
       className="px-3 py-1 text-sm font-medium text-primary hover:bg-gray-100 rounded-lg transition-colors"
-      title="Click to edit stock quantity"
+      title={t('editStock.clickToEdit')}
     >
       {initialValue}
     </button>

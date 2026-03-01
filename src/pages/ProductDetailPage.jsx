@@ -1,12 +1,14 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
 import { ArrowLeft, Star, Minus, Plus, ShoppingCart, Shield, Truck, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fetchProduct, fetchProducts } from '../api/products';
 import { useCart } from '../hooks/useCart';
 import ProductCard from '../components/product/ProductCard';
 import Toast from '../components/ui/Toast';
 
 export default function ProductDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { dispatch } = useCart();
@@ -55,8 +57,8 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold text-primary">Product not found</h1>
-        <Link to="/" className="text-accent hover:underline">Back to Home</Link>
+        <h1 className="text-2xl font-bold text-primary">{t('product.notFound')}</h1>
+        <Link to="/" className="text-accent hover:underline">{t('product.backToHome')}</Link>
       </div>
     );
   }
@@ -75,7 +77,7 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     dispatch({ type: 'ADD_TO_CART', payload: { ...product, quantity } });
-    setToast({ visible: true, message: `${product.name} (x${quantity}) added to cart` });
+    setToast({ visible: true, message: `${product.name} (x${quantity}) ${t('product.addedToCart')}` });
     setQuantity(1);
   };
 
@@ -90,8 +92,8 @@ export default function ProductDetailPage() {
             onClick={() => navigate(-1)}
             className="inline-flex items-center gap-2 text-muted hover:text-primary transition-colors group"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-medium">Back to Catalog</span>
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform rtl:rotate-180 rtl:group-hover:translate-x-1" />
+            <span className="text-sm font-medium">{t('product.backToCatalog')}</span>
           </button>
         </div>
 
@@ -152,7 +154,7 @@ export default function ProductDetailPage() {
                   ))}
                 </div>
                 <span className="text-sm font-semibold text-gray-700">{product.rating}</span>
-                <span className="text-sm text-muted">(Reviews)</span>
+                <span className="text-sm text-muted">({t('product.reviews')})</span>
               </div>
 
               {/* Price */}
@@ -191,7 +193,7 @@ export default function ProductDetailPage() {
                 <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
                   <button
                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    className="p-3 hover:bg-gray-50 transition-colors"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-gray-50 transition-colors"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4 text-primary" />
@@ -201,7 +203,7 @@ export default function ProductDetailPage() {
                   </span>
                   <button
                     onClick={() => setQuantity(q => Math.min(10, q + 1))}
-                    className="p-3 hover:bg-gray-50 transition-colors"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-gray-50 transition-colors"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4 text-primary" />
@@ -214,20 +216,20 @@ export default function ProductDetailPage() {
                   className="flex-1 flex items-center justify-center gap-3 bg-accent hover:bg-accent-dark text-white font-semibold py-3.5 px-8 rounded-xl transition-all hover:shadow-lg disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  {product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                  {product.inStock ? t('product.addToCart') : t('product.outOfStock')}
                 </button>
               </div>
 
               {/* Trust Badges */}
               <div className="grid grid-cols-3 gap-4 mt-8">
                 {[
-                  { icon: Truck, label: 'Free Shipping' },
-                  { icon: Shield, label: '2 Year Warranty' },
-                  { icon: RotateCcw, label: '30-Day Returns' },
-                ].map(({ icon: Icon, label }) => (
-                  <div key={label} className="flex flex-col items-center gap-1.5 text-center">
+                  { icon: Truck, labelKey: 'product.freeShipping' },
+                  { icon: Shield, labelKey: 'product.warranty' },
+                  { icon: RotateCcw, labelKey: 'product.returns' },
+                ].map(({ icon: Icon, labelKey }) => (
+                  <div key={labelKey} className="flex flex-col items-center gap-1.5 text-center">
                     <Icon className="w-5 h-5 text-muted" />
-                    <span className="text-xs font-medium text-muted">{label}</span>
+                    <span className="text-xs font-medium text-muted">{t(labelKey)}</span>
                   </div>
                 ))}
               </div>
@@ -239,7 +241,7 @@ export default function ProductDetailPage() {
         {product.detailedSpecs && Object.keys(product.detailedSpecs).length > 0 && (
           <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
             <div className="bg-surface rounded-2xl p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-primary mb-6">Technical Specifications</h2>
+              <h2 className="text-xl font-bold text-primary mb-6">{t('product.specifications')}</h2>
               <div className="grid sm:grid-cols-2 gap-x-12 gap-y-1">
                 {Object.entries(product.detailedSpecs).map(([key, value], i) => (
                   <div
@@ -251,7 +253,7 @@ export default function ProductDetailPage() {
                     }`}
                   >
                     <span className="text-sm font-medium text-muted whitespace-nowrap">{key}</span>
-                    <span className="text-sm font-semibold text-primary text-right">{value}</span>
+                    <span className="text-sm font-semibold text-primary text-end">{value}</span>
                   </div>
                 ))}
               </div>
@@ -262,8 +264,8 @@ export default function ProductDetailPage() {
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
-            <h2 className="text-xl font-bold text-primary mb-6">You May Also Like</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <h2 className="text-xl font-bold text-primary mb-6">{t('product.youMayAlsoLike')}</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {relatedProducts.map(p => (
                 <ProductCard key={p.id} product={p} />
               ))}

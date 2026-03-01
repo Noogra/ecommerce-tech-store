@@ -13,6 +13,21 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Hebrew RTL font */
+[dir="rtl"] body,
+[dir="rtl"] {
+  font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+}
+
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @keyframes slide-in {

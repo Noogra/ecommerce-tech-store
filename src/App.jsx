@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import HomePage from './pages/HomePage';
@@ -22,6 +23,7 @@ import AdminFinance from './pages/admin/AdminFinance';
 
 export default function App() {
   return (
+    <LanguageProvider>
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
@@ -57,5 +59,6 @@ export default function App() {
         </BrowserRouter>
       </CartProvider>
     </AuthProvider>
+    </LanguageProvider>
   );
 }

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 const STATUS_CONFIG = {
   New: {
     color: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -18,6 +20,7 @@ const STATUS_CONFIG = {
 };
 
 export default function OrderStatusBadge({ status, size = 'md' }) {
+  const { t } = useTranslation();
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.New;
 
   const sizeClasses = {
@@ -31,7 +34,7 @@ export default function OrderStatusBadge({ status, size = 'md' }) {
       className={`inline-flex items-center gap-1.5 font-medium rounded-full border ${config.color} ${sizeClasses[size]}`}
     >
       <span>{config.icon}</span>
-      {status}
+      {t(`orderStatus.${status}`, status)}
     </span>
   );
 }

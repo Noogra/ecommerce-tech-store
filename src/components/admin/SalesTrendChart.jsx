@@ -1,6 +1,9 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 export default function SalesTrendChart({ data }) {
+  const { t } = useTranslation();
+
   // Format date for display (e.g., "Feb 10")
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -17,10 +20,10 @@ export default function SalesTrendChart({ data }) {
           {formatDate(payload[0].payload.date)}
         </p>
         <p className="text-sm text-emerald-600 font-medium">
-          Revenue: ${payload[0].value.toFixed(2)}
+          {t('salesChart.revenue')} ${payload[0].value.toFixed(2)}
         </p>
         <p className="text-sm text-muted">
-          Orders: {payload[0].payload.orderCount}
+          {t('salesChart.orders')} {payload[0].payload.orderCount}
         </p>
       </div>
     );

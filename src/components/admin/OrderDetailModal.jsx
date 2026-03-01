@@ -4,6 +4,7 @@ import { fetchOrder, updateOrderStatus, markOrderAsRead, cancelOrder } from '../
 import { useAuth } from '../../context/AuthContext';
 import OrderStatusBadge from './OrderStatusBadge';
 import ConfirmDialog from './ConfirmDialog';
+import { useTranslation } from 'react-i18next';
 
 export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
   const [order, setOrder] = useState(null);
@@ -12,6 +13,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
   const [toast, setToast] = useState(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchOrder(orderId, token)
@@ -35,7 +37,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
       await updateOrderStatus(orderId, newStatus, token);
       const updated = await fetchOrder(orderId, token);
       setOrder(updated);
-      showToast(`Order status updated to ${newStatus}`);
+      showToast(t('orderDetail.statusUpdated', { status: newStatus }));
       onStatusChange?.();
     } catch (error) {
       showToast(error.message, 'error');
@@ -48,7 +50,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
     setUpdating(true);
     try {
       await cancelOrder(orderId, token);
-      showToast('Order cancelled successfully');
+      showToast(t('orderDetail.cancelSuccess'));
       setConfirmCancel(false);
       setTimeout(() => {
         onClose();
@@ -93,7 +95,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-10">
             <div>
-              <h2 className="text-xl font-semibold text-primary">Order Details</h2>
+              <h2 className="text-xl font-semibold text-primary">{t('orderDetail.title')}</h2>
               <p className="text-sm text-muted mt-0.5 font-mono">{order.orderNumber}</p>
             </div>
             <button
@@ -108,13 +110,13 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
             {/* Status & Actions */}
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-muted">Status:</span>
+                <span className="text-sm font-medium text-muted">{t('orderDetail.statusLabel')}</span>
                 <OrderStatusBadge status={order.status} />
               </div>
 
               {getAvailableStatuses(order.status).length > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted">Change to:</span>
+                  <span className="text-sm text-muted">{t('orderDetail.changeTo')}</span>
                   {getAvailableStatuses(order.status).map((status) => (
                     <button
                       key={status}
@@ -126,7 +128,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                           : 'bg-accent text-white hover:bg-accent-dark'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                      {status}
+                      {t(`orderStatus.${status}`, status)}
                     </button>
                   ))}
                 </div>
@@ -141,7 +143,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                     <User className="w-5 h-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted">Customer</p>
+                    <p className="text-sm font-medium text-muted">{t('orderDetail.customer')}</p>
                     <p className="text-base font-semibold text-primary mt-0.5">
                       {order.customerFirstName} {order.customerLastName}
                     </p>
@@ -154,7 +156,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                     <MapPin className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted">Shipping Address</p>
+                    <p className="text-sm font-medium text-muted">{t('orderDetail.shippingAddress')}</p>
                     <p className="text-sm text-primary mt-0.5">{order.shippingAddress}</p>
                     <p className="text-sm text-primary">
                       {order.shippingCity}, {order.shippingZip}
@@ -169,7 +171,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                     <Calendar className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted">Order Date</p>
+                    <p className="text-sm font-medium text-muted">{t('orderDetail.orderDate')}</p>
                     <p className="text-base font-semibold text-primary mt-0.5">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
@@ -181,7 +183,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                     <CreditCard className="w-5 h-5 text-amber-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted">Payment Method</p>
+                    <p className="text-sm font-medium text-muted">{t('orderDetail.paymentMethod')}</p>
                     <p className="text-base font-semibold text-primary mt-0.5 capitalize">
                       {order.paymentMethod}
                     </p>
@@ -194,7 +196,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
             <div>
               <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                 <Package className="w-5 h-5" />
-                Order Items
+                {t('orderDetail.orderItems')}
               </h3>
               <div className="space-y-3">
                 {order.items.map((item, index) => (
@@ -207,7 +209,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-primary">{item.productName}</p>
                       <p className="text-xs text-muted mt-0.5">{item.productBrand}</p>
-                      <p className="text-xs text-muted mt-1">Qty: {item.quantity}</p>
+                      <p className="text-xs text-muted mt-1">{t('orderDetail.qty')} {item.quantity}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-primary">
@@ -221,7 +223,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                         {item.unitPrice.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                         })}{' '}
-                        each
+                        {t('orderDetail.each')}
                       </p>
                     </div>
                   </div>
@@ -232,27 +234,27 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
             {/* Order Summary */}
             <div className="p-4 bg-gray-50 rounded-xl space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Subtotal</span>
+                <span className="text-muted">{t('orderDetail.subtotal')}</span>
                 <span className="font-medium text-primary">
                   ${order.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Tax</span>
+                <span className="text-muted">{t('orderDetail.tax')}</span>
                 <span className="font-medium text-primary">
                   ${order.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted">Shipping</span>
+                <span className="text-muted">{t('orderDetail.shipping')}</span>
                 <span className="font-medium text-green-600">
                   {order.shipping === 0
-                    ? 'Free'
+                    ? t('orderDetail.free')
                     : `$${order.shipping.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                 </span>
               </div>
               <div className="flex justify-between text-lg font-bold text-primary pt-2 border-t border-gray-200">
-                <span>Total</span>
+                <span>{t('orderDetail.total')}</span>
                 <span>${order.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
@@ -260,7 +262,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
             {/* Customer Note */}
             {order.customerNote && (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <p className="text-sm font-medium text-blue-900 mb-1">Customer Note</p>
+                <p className="text-sm font-medium text-blue-900 mb-1">{t('orderDetail.customerNote')}</p>
                 <p className="text-sm text-blue-700">{order.customerNote}</p>
               </div>
             )}
@@ -273,7 +275,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
                   disabled={updating}
                   className="text-sm text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
                 >
-                  Cancel Order
+                  {t('orderDetail.cancelOrder')}
                 </button>
               </div>
             )}
@@ -284,7 +286,7 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-[60] px-6 py-3 rounded-xl shadow-lg text-white animate-in slide-in-from-bottom-5 duration-300 ${
+          className={`fixed bottom-6 end-6 z-[60] px-6 py-3 rounded-xl shadow-lg text-white animate-in slide-in-from-bottom-5 duration-300 ${
             toast.type === 'error' ? 'bg-red-500' : 'bg-green-500'
           }`}
         >
@@ -295,9 +297,9 @@ export default function OrderDetailModal({ orderId, onClose, onStatusChange }) {
       {/* Cancel Confirmation */}
       <ConfirmDialog
         isOpen={confirmCancel}
-        title="Cancel Order"
-        message="Are you sure you want to cancel this order? This action cannot be undone."
-        confirmText="Cancel Order"
+        title={t('orderDetail.cancelConfirmTitle')}
+        message={t('orderDetail.cancelConfirmMsg')}
+        confirmText={t('orderDetail.cancelOrder')}
         confirmVariant="danger"
         onConfirm={handleCancel}
         onCancel={() => setConfirmCancel(false)}

@@ -4,11 +4,13 @@ import { fetchInventory } from '../../api/products';
 import { useAuth } from '../../context/AuthContext';
 import StockBadge from '../../components/admin/StockBadge';
 import EditableStockCell from '../../components/admin/EditableStockCell';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminInventory() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const loadInventory = () => {
     setLoading(true);
@@ -16,7 +18,7 @@ export default function AdminInventory() {
       .then(setProducts)
       .catch((error) => {
         console.error('Failed to load inventory:', error);
-        alert('Failed to load inventory');
+        alert(t('inventory.loadFailed'));
       })
       .finally(() => setLoading(false));
   };
@@ -33,8 +35,8 @@ export default function AdminInventory() {
       {/* Header with Stats */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Inventory Management</h1>
-          <p className="text-sm text-muted mt-1">Click any stock quantity to edit</p>
+          <h1 className="text-2xl font-bold text-primary">{t('inventory.title')}</h1>
+          <p className="text-sm text-muted mt-1">{t('inventory.subtitle')}</p>
         </div>
         <button
           onClick={loadInventory}
@@ -42,7 +44,7 @@ export default function AdminInventory() {
           className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-primary font-medium text-sm px-5 py-2.5 rounded-xl border border-gray-200 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
+          {t('inventory.refresh')}
         </button>
       </div>
 
@@ -51,9 +53,9 @@ export default function AdminInventory() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted">Total Stock</p>
+              <p className="text-sm text-muted">{t('inventory.totalStock')}</p>
               <p className="text-3xl font-bold text-primary mt-1">{totalStock.toLocaleString()}</p>
-              <p className="text-xs text-muted mt-1">{products.length} products</p>
+              <p className="text-xs text-muted mt-1">{t('inventory.products', { count: products.length })}</p>
             </div>
             <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <Package className="w-6 h-6" />
@@ -64,9 +66,9 @@ export default function AdminInventory() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted">Low Stock</p>
+              <p className="text-sm text-muted">{t('inventory.lowStock')}</p>
               <p className="text-3xl font-bold text-yellow-600 mt-1">{lowStockCount}</p>
-              <p className="text-xs text-muted mt-1">Needs restocking</p>
+              <p className="text-xs text-muted mt-1">{t('inventory.lowStockSub')}</p>
             </div>
             <div className="w-12 h-12 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center">
               <span className="text-2xl">⚡</span>
@@ -77,9 +79,9 @@ export default function AdminInventory() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted">Out of Stock</p>
+              <p className="text-sm text-muted">{t('inventory.outOfStock')}</p>
               <p className="text-3xl font-bold text-red-600 mt-1">{outOfStockCount}</p>
-              <p className="text-xs text-muted mt-1">Critical attention</p>
+              <p className="text-xs text-muted mt-1">{t('inventory.outOfStockSub')}</p>
             </div>
             <div className="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
               <span className="text-2xl">❌</span>
@@ -99,28 +101,28 @@ export default function AdminInventory() {
         ) : products.length === 0 ? (
           <div className="p-12 text-center text-muted">
             <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-            <p className="text-lg font-medium">No products found</p>
-            <p className="text-sm mt-1">Add products to manage inventory.</p>
+            <p className="text-lg font-medium">{t('inventory.noProducts')}</p>
+            <p className="text-sm mt-1">{t('inventory.noProductsSub')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Product
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('inventory.colProduct')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Category
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('inventory.colCategory')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Price
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('inventory.colPrice')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Stock Quantity
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('inventory.colStock')}
                   </th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
-                    Status
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">
+                    {t('inventory.colStatus')}
                   </th>
                 </tr>
               </thead>

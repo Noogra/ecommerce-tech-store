@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight, Download, Copy, CheckCircle, XCircle, AlertC
 import { bulkUploadProducts } from '../../api/products';
 import { useAuth } from '../../context/AuthContext';
 import FileUpload from '../../components/admin/FileUpload';
+import { useTranslation } from 'react-i18next';
 
 const SAMPLE_TEMPLATE = {
   products: [
@@ -53,6 +54,7 @@ export default function AdminBulkUpload() {
   const [expandedErrors, setExpandedErrors] = useState(new Set());
   const [toast, setToast] = useState(null);
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -94,9 +96,9 @@ export default function AdminBulkUpload() {
       setResult(uploadResult);
 
       if (uploadResult.success > 0 && uploadResult.failed === 0) {
-        showToast(`Successfully uploaded ${uploadResult.success} products!`);
+        showToast(t('bulkUpload.successAll', { count: uploadResult.success }));
       } else if (uploadResult.failed > 0) {
-        showToast(`${uploadResult.success} succeeded, ${uploadResult.failed} failed`, 'warning');
+        showToast(t('bulkUpload.partialSuccess', { success: uploadResult.success, fail: uploadResult.failed }), 'warning');
       }
     } catch (err) {
       showToast(err.message, 'error');
@@ -107,7 +109,7 @@ export default function AdminBulkUpload() {
 
   const handleCopyTemplate = () => {
     navigator.clipboard.writeText(JSON.stringify(SAMPLE_TEMPLATE, null, 2));
-    showToast('Template copied to clipboard!');
+    showToast(t('bulkUpload.copied'));
   };
 
   const handleDownloadTemplate = () => {
@@ -118,7 +120,7 @@ export default function AdminBulkUpload() {
     a.download = 'product-upload-template.json';
     a.click();
     URL.revokeObjectURL(url);
-    showToast('Template downloaded!');
+    showToast(t('bulkUpload.downloaded'));
   };
 
   const handleDownloadErrorReport = () => {
@@ -131,7 +133,7 @@ export default function AdminBulkUpload() {
     a.download = 'upload-errors.json';
     a.click();
     URL.revokeObjectURL(url);
-    showToast('Error report downloaded!');
+    showToast(t('bulkUpload.errorDownloaded'));
   };
 
   const toggleErrorExpand = (index) => {
@@ -147,13 +149,13 @@ export default function AdminBulkUpload() {
   return (
     <div className="max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary">Bulk Product Upload</h1>
-        <p className="text-sm text-muted mt-1">Upload multiple products at once using a JSON file</p>
+        <h1 className="text-2xl font-bold text-primary">{t('bulkUpload.title')}</h1>
+        <p className="text-sm text-muted mt-1">{t('bulkUpload.subtitle')}</p>
       </div>
 
       {/* File Upload Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-primary mb-4">Upload JSON File</h2>
+        <h2 className="text-lg font-semibold text-primary mb-4">{t('bulkUpload.uploadJson')}</h2>
         <FileUpload
           onFileSelect={handleFileSelect}
           accept=".json"
@@ -167,7 +169,7 @@ export default function AdminBulkUpload() {
             disabled={isUploading}
             className="mt-4 w-full bg-accent hover:bg-accent-dark text-white font-semibold py-3 rounded-xl transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            {isUploading ? 'Uploading...' : 'Upload Products'}
+            {isUploading ? t('bulkUpload.uploading') : t('bulkUpload.uploadBtn')}
           </button>
         )}
       </div>
@@ -175,13 +177,13 @@ export default function AdminBulkUpload() {
       {/* Results Section */}
       {result && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-primary mb-4">Upload Results</h2>
+          <h2 className="text-lg font-semibold text-primary mb-4">{t('bulkUpload.results')}</h2>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="p-4 bg-green-50 rounded-xl border border-green-200">
               <div className="flex items-center gap-2 mb-1">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <p className="text-sm font-medium text-green-900">Successful</p>
+                <p className="text-sm font-medium text-green-900">{t('bulkUpload.successful')}</p>
               </div>
               <p className="text-2xl font-bold text-green-600">{result.success}</p>
             </div>
@@ -189,7 +191,7 @@ export default function AdminBulkUpload() {
             <div className="p-4 bg-red-50 rounded-xl border border-red-200">
               <div className="flex items-center gap-2 mb-1">
                 <XCircle className="w-5 h-5 text-red-600" />
-                <p className="text-sm font-medium text-red-900">Failed</p>
+                <p className="text-sm font-medium text-red-900">{t('bulkUpload.failed')}</p>
               </div>
               <p className="text-2xl font-bold text-red-600">{result.failed}</p>
             </div>
@@ -198,13 +200,13 @@ export default function AdminBulkUpload() {
           {result.errors && result.errors.length > 0 && (
             <>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-red-700">Validation Errors</h3>
+                <h3 className="text-sm font-semibold text-red-700">{t('bulkUpload.validationErrors')}</h3>
                 <button
                   onClick={handleDownloadErrorReport}
                   className="text-sm text-accent hover:text-accent-dark font-medium flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
-                  Download Error Report
+                  {t('bulkUpload.downloadErrors')}
                 </button>
               </div>
 
@@ -217,9 +219,11 @@ export default function AdminBulkUpload() {
                     >
                       <div className="flex items-center gap-3">
                         <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
-                        <div className="text-left">
+                        <div className="text-start">
                           <p className="text-sm font-medium text-red-900">
-                            {error.index >= 0 ? `Product #${error.index + 1}` : 'JSON Parse Error'}
+                            {error.index >= 0
+                              ? t('bulkUpload.productNum', { index: error.index + 1 })
+                              : t('bulkUpload.jsonParseError')}
                             {error.product?.name && `: ${error.product.name}`}
                           </p>
                         </div>
@@ -227,7 +231,7 @@ export default function AdminBulkUpload() {
                       {expandedErrors.has(idx) ? (
                         <ChevronDown className="w-4 h-4 text-red-600" />
                       ) : (
-                        <ChevronRight className="w-4 h-4 text-red-600" />
+                        <ChevronRight className="w-4 h-4 text-red-600 rtl:rotate-180" />
                       )}
                     </button>
 
@@ -247,28 +251,30 @@ export default function AdminBulkUpload() {
       {/* Template Section */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-primary">JSON Template</h2>
+          <h2 className="text-lg font-semibold text-primary">{t('bulkUpload.template')}</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopyTemplate}
               className="text-sm text-accent hover:text-accent-dark font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-accent/5 transition-colors"
             >
               <Copy className="w-4 h-4" />
-              Copy
+              {t('bulkUpload.copy')}
             </button>
             <button
               onClick={handleDownloadTemplate}
               className="text-sm text-accent hover:text-accent-dark font-medium flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-accent/5 transition-colors"
             >
               <Download className="w-4 h-4" />
-              Download
+              {t('bulkUpload.download')}
             </button>
             <button
               onClick={() => setShowTemplate(!showTemplate)}
               className="text-sm text-gray-600 font-medium flex items-center gap-1.5"
             >
-              {showTemplate ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-              {showTemplate ? 'Hide' : 'Show'}
+              {showTemplate
+                ? <ChevronDown className="w-4 h-4" />
+                : <ChevronRight className="w-4 h-4 rtl:rotate-180" />}
+              {showTemplate ? t('bulkUpload.hide') : t('bulkUpload.show')}
             </button>
           </div>
         </div>
@@ -280,22 +286,22 @@ export default function AdminBulkUpload() {
         )}
 
         <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
-          <h3 className="text-sm font-semibold text-blue-900 mb-2">Field Requirements</h3>
+          <h3 className="text-sm font-semibold text-blue-900 mb-2">{t('bulkUpload.fieldRequirements')}</h3>
           <ul className="text-xs text-blue-800 space-y-1.5">
-            <li><strong>Required:</strong> name, brand, category, price</li>
-            <li><strong>Optional:</strong> subcategory, originalPrice, image, specs, detailedSpecs, rating, inStock, featured</li>
-            <li><strong>category:</strong> Must be an existing category slug (e.g., "mobile-phones", "accessories")</li>
-            <li><strong>subcategory:</strong> Must exist in the selected category</li>
-            <li><strong>price:</strong> Must be a positive number</li>
-            <li><strong>rating:</strong> Must be between 0 and 5</li>
-            <li><strong>Max products per upload:</strong> 1000</li>
+            <li><strong>{t('bulkUpload.required')}</strong> name, brand, category, price</li>
+            <li><strong>{t('bulkUpload.optional')}</strong> subcategory, originalPrice, image, specs, detailedSpecs, rating, inStock, featured</li>
+            <li><strong>category:</strong> {t('bulkUpload.categoryNote')}</li>
+            <li><strong>subcategory:</strong> {t('bulkUpload.subcategoryNote')}</li>
+            <li><strong>price:</strong> {t('bulkUpload.priceNote')}</li>
+            <li><strong>rating:</strong> {t('bulkUpload.ratingNote')}</li>
+            <li><strong>{t('bulkUpload.maxProducts')}</strong> 1000</li>
           </ul>
         </div>
       </div>
 
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom duration-300">
+        <div className="fixed bottom-6 end-6 z-50 animate-in slide-in-from-bottom duration-300">
           <div
             className={`px-6 py-4 rounded-xl shadow-lg ${
               toast.type === 'error'

@@ -9,6 +9,7 @@ import {
   getSuppliers, getTransactions, deleteTransaction,
   getFinancialSummary, analyzeDocument, confirmDocument,
 } from '../../api/finance';
+import { useTranslation } from 'react-i18next';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 const fmt = (n) =>
@@ -19,9 +20,6 @@ const fmtDate = (d) =>
 
 const ACCEPTED = '.pdf,.jpg,.jpeg,.png,.webp';
 const MAX_MB = 10;
-
-// ─── Upload Phase State Machine ───────────────────────────────────────────────
-// idle → analyzing → review → confirming → (back to idle on success/cancel)
 
 // ─── Subcomponents ────────────────────────────────────────────────────────────
 
@@ -50,16 +48,17 @@ function UploadZone({ onFile, analyzing }) {
   const [dragging, setDragging] = useState(false);
   const [fileError, setFileError] = useState('');
   const inputRef = useRef(null);
+  const { t } = useTranslation();
 
   const validate = (file) => {
     if (!file) return false;
     const ext = file.name.split('.').pop().toLowerCase();
     if (!['pdf', 'jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
-      setFileError('Unsupported format. Use PDF, JPG, PNG, or WEBP.');
+      setFileError(t('finance.unsupportedFormat'));
       return false;
     }
     if (file.size > MAX_MB * 1024 * 1024) {
-      setFileError(`File too large. Maximum size is ${MAX_MB}MB.`);
+      setFileError(t('finance.fileTooLarge', { maxMB: MAX_MB }));
       return false;
     }
     setFileError('');
@@ -86,8 +85,8 @@ function UploadZone({ onFile, analyzing }) {
           <Sparkles className="w-8 h-8 text-accent animate-pulse" />
         </div>
         <div className="text-center">
-          <p className="text-base font-semibold text-primary">AI is reading your document…</p>
-          <p className="text-sm text-muted mt-1">Identifying supplier, type, and extracting amounts</p>
+          <p className="text-base font-semibold text-primary">{t('finance.aiReading')}</p>
+          <p className="text-sm text-muted mt-1">{t('finance.aiIdentifying')}</p>
         </div>
         <div className="flex gap-1.5 mt-2">
           {[0, 1, 2].map(i => (
@@ -114,9 +113,9 @@ function UploadZone({ onFile, analyzing }) {
         <Upload className="w-8 h-8 text-muted" />
       </div>
       <div className="text-center">
-        <p className="text-base font-semibold text-primary">Drop your invoice or receipt here</p>
-        <p className="text-sm text-muted mt-1">or <span className="text-accent font-medium">click to browse</span></p>
-        <p className="text-xs text-gray-400 mt-2">PDF · JPG · PNG · WEBP — max {MAX_MB}MB</p>
+        <p className="text-base font-semibold text-primary">{t('finance.dropInvoice')}</p>
+        <p className="text-sm text-muted mt-1">{t('finance.or')} <span className="text-accent font-medium">{t('finance.clickBrowse')}</span></p>
+        <p className="text-xs text-gray-400 mt-2">{t('finance.uploadHint', { maxMB: MAX_MB })}</p>
       </div>
       {fileError && (
         <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-xl">
@@ -142,6 +141,7 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
     referenceNumber: result.referenceNumber || '',
     description: result.description || '',
   });
+  const { t } = useTranslation();
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
 
@@ -167,13 +167,13 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-primary">AI Analysis Complete</p>
-            <p className="text-xs text-muted">Review and correct if needed, then confirm</p>
+            <p className="text-sm font-semibold text-primary">{t('finance.aiComplete')}</p>
+            <p className="text-xs text-muted">{t('finance.aiReview')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${confidenceColor}`}>
-            {confidence}% confidence
+            {confidence}% {t('finance.confidence')}
           </span>
           <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-gray-100 text-muted transition-colors">
             <XCircle className="w-5 h-5" />
@@ -184,17 +184,17 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         {/* Document Type toggle */}
         <div>
-          <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Document Type</label>
+          <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">{t('finance.docType')}</label>
           <div className="flex gap-2">
             {[
-              { val: 'invoice', label: 'Invoice', desc: 'Increases debt owed to supplier', cls: 'border-red-400 bg-red-50 text-red-700' },
-              { val: 'payment', label: 'Payment Receipt', desc: 'Decreases debt — money paid', cls: 'border-green-400 bg-green-50 text-green-700' },
+              { val: 'invoice', label: t('finance.typeInvoice'), desc: t('finance.typeInvoiceSub'), cls: 'border-red-400 bg-red-50 text-red-700' },
+              { val: 'payment', label: t('finance.typePayment'), desc: t('finance.typePaymentSub'), cls: 'border-green-400 bg-green-50 text-green-700' },
             ].map(({ val, label, desc, cls }) => (
               <button
                 key={val}
                 type="button"
                 onClick={() => set('documentType', val)}
-                className={`flex-1 text-left px-4 py-3 rounded-xl border-2 transition-all ${
+                className={`flex-1 text-start px-4 py-3 rounded-xl border-2 transition-all ${
                   form.documentType === val ? cls : 'border-gray-200 text-muted hover:border-gray-300'
                 }`}
               >
@@ -209,7 +209,7 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">
-              Supplier Name *
+              {t('finance.supplierName')} *
             </label>
             <input
               value={form.supplierName}
@@ -221,7 +221,7 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Amount ($) *</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">{t('finance.amount')} *</label>
             <input
               type="number"
               step="0.01"
@@ -230,12 +230,12 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
               onChange={e => set('amount', e.target.value)}
               required
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-              placeholder="0.00"
+              placeholder={t('finance.descPlaceholder')}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Date *</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">{t('finance.date')} *</label>
             <input
               type="date"
               value={form.date}
@@ -246,33 +246,33 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Reference #</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">{t('finance.reference')}</label>
             <input
               value={form.referenceNumber}
               onChange={e => set('referenceNumber', e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-              placeholder="INV-001 / RCP-055"
+              placeholder={t('finance.refPlaceholder')}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Contact Email</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">{t('finance.contactEmail')}</label>
             <input
               type="email"
               value={form.contactEmail}
               onChange={e => set('contactEmail', e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-              placeholder="supplier@example.com"
+              placeholder={t('finance.emailPlaceholder')}
             />
           </div>
 
           <div className="col-span-2">
-            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Description</label>
+            <label className="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">{t('finance.description')}</label>
             <input
               value={form.description}
               onChange={e => set('description', e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-              placeholder="What was purchased or paid for"
+              placeholder={t('finance.descPlaceholder')}
             />
           </div>
         </div>
@@ -285,7 +285,7 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
             disabled={confirming}
             className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
-            Cancel
+            {t('finance.cancel')}
           </button>
           <button
             type="submit"
@@ -295,12 +295,12 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
             {confirming ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                Saving…
+                {t('finance.saving')}
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-4 h-4" />
-                Confirm & Record
+                {t('finance.confirmBtn')}
               </>
             )}
           </button>
@@ -313,6 +313,7 @@ function ConfirmCard({ result, onConfirm, onCancel, confirming }) {
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function AdminFinance() {
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   // Data state
   const [suppliers, setSuppliers] = useState([]);
@@ -363,7 +364,7 @@ export default function AdminFinance() {
       const { isNewSupplier, supplier, transaction } = await confirmDocument(data, token);
       setPhase('idle');
       setAnalysisResult(null);
-      const typeLabel = transaction.type === 'invoice' ? 'Invoice' : 'Payment';
+      const typeLabel = transaction.type === 'invoice' ? t('finance.invoice') : t('finance.payment');
       const newLabel = isNewSupplier ? ` — new supplier "${supplier.name}" created` : '';
       setSuccessMsg(`${typeLabel} of ${fmt(transaction.amount)} from ${supplier.name} recorded.${newLabel}`);
       setTimeout(() => setSuccessMsg(''), 6000);
@@ -381,7 +382,7 @@ export default function AdminFinance() {
   };
 
   const handleDeleteTx = async (tx) => {
-    if (!window.confirm(`Delete this ${tx.type} of ${fmt(tx.amount)} from ${tx.supplierName}?`)) return;
+    if (!window.confirm(t('finance.deleteConfirm', { type: tx.type, amount: fmt(tx.amount), supplier: tx.supplierName }))) return;
     try {
       await deleteTransaction(tx.id, token);
       await loadAll();
@@ -394,14 +395,14 @@ export default function AdminFinance() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Finance</h1>
-          <p className="text-sm text-muted mt-0.5">AI-powered supplier ledger — upload any invoice or receipt</p>
+          <h1 className="text-2xl font-bold text-primary">{t('finance.title')}</h1>
+          <p className="text-sm text-muted mt-0.5">{t('finance.subtitle')}</p>
         </div>
         <button
           onClick={loadAll}
           disabled={dataLoading}
           className="p-2 border border-gray-200 rounded-xl text-muted hover:bg-gray-50 transition-colors disabled:opacity-40"
-          title="Refresh"
+          title={t('finance.refresh')}
         >
           <RefreshCw className={`w-4 h-4 ${dataLoading ? 'animate-spin' : ''}`} />
         </button>
@@ -409,10 +410,10 @@ export default function AdminFinance() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={TrendingDown} label="Total Debt" value={fmt(summary?.totalDebt)} color="red" />
-        <StatCard icon={TrendingUp} label="Total Paid" value={fmt(summary?.totalPaid)} color="green" />
-        <StatCard icon={Users} label="Suppliers" value={suppliers.length} color="blue" />
-        <StatCard icon={FileText} label="Transactions" value={transactions.length} color="amber" />
+        <StatCard icon={TrendingDown} label={t('finance.totalDebt')} value={fmt(summary?.totalDebt)} color="red" />
+        <StatCard icon={TrendingUp} label={t('finance.totalPaid')} value={fmt(summary?.totalPaid)} color="green" />
+        <StatCard icon={Users} label={t('finance.suppliersLabel')} value={suppliers.length} color="blue" />
+        <StatCard icon={FileText} label={t('finance.transactionsLabel')} value={transactions.length} color="amber" />
       </div>
 
       {/* Success Banner */}
@@ -428,7 +429,7 @@ export default function AdminFinance() {
         <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-3.5 rounded-2xl text-sm font-medium">
           <AlertCircle className="w-5 h-5 shrink-0" />
           {uploadError}
-          <button onClick={() => setUploadError('')} className="ml-auto text-red-400 hover:text-red-600">
+          <button onClick={() => setUploadError('')} className="ms-auto text-red-400 hover:text-red-600">
             <XCircle className="w-4 h-4" />
           </button>
         </div>
@@ -438,7 +439,7 @@ export default function AdminFinance() {
       <div>
         <div className="flex items-center gap-2 mb-3">
           <Sparkles className="w-4 h-4 text-accent" />
-          <h2 className="text-sm font-semibold text-primary">AI Document Processor</h2>
+          <h2 className="text-sm font-semibold text-primary">{t('finance.aiProcessor')}</h2>
         </div>
 
         {phase === 'idle' && (
@@ -462,8 +463,8 @@ export default function AdminFinance() {
         {/* Supplier Ledger */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-primary">Supplier Ledger</h2>
-            <span className="text-xs text-muted">{suppliers.length} suppliers</span>
+            <h2 className="text-sm font-semibold text-primary">{t('finance.supplierLedger')}</h2>
+            <span className="text-xs text-muted">{t('finance.suppliersCount', { count: suppliers.length })}</span>
           </div>
 
           {dataLoading ? (
@@ -475,7 +476,7 @@ export default function AdminFinance() {
           ) : suppliers.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-14 text-muted">
               <Users className="w-8 h-8 mb-2 opacity-40" />
-              <p className="text-sm">No suppliers yet. Upload a document to add one automatically.</p>
+              <p className="text-sm">{t('finance.noSuppliers')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-50 max-h-80 overflow-y-auto">
@@ -485,12 +486,12 @@ export default function AdminFinance() {
                     <p className="text-sm font-medium text-primary">{s.name}</p>
                     {s.email && <p className="text-xs text-muted mt-0.5">{s.email}</p>}
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className={`text-sm font-bold ${s.currentBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      {s.currentBalance > 0 ? `−${fmt(s.currentBalance)}` : 'Settled'}
+                      {s.currentBalance > 0 ? `−${fmt(s.currentBalance)}` : t('finance.settled')}
                     </p>
                     {s.currentBalance > 0 && (
-                      <p className="text-xs text-muted">outstanding</p>
+                      <p className="text-xs text-muted">{t('finance.outstanding')}</p>
                     )}
                   </div>
                 </div>
@@ -502,8 +503,8 @@ export default function AdminFinance() {
         {/* Recent Activity */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-primary">Recent Activity</h2>
-            <span className="text-xs text-muted">{transactions.length} total</span>
+            <h2 className="text-sm font-semibold text-primary">{t('finance.recentActivity')}</h2>
+            <span className="text-xs text-muted">{t('finance.transactionsCount', { count: transactions.length })}</span>
           </div>
 
           {dataLoading ? (
@@ -515,7 +516,7 @@ export default function AdminFinance() {
           ) : transactions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-14 text-muted">
               <FileText className="w-8 h-8 mb-2 opacity-40" />
-              <p className="text-sm">No transactions yet.</p>
+              <p className="text-sm">{t('finance.noTransactions')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-50 max-h-80 overflow-y-auto">
@@ -529,7 +530,7 @@ export default function AdminFinance() {
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                         tx.type === 'invoice' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'
                       }`}>
-                        {tx.type === 'invoice' ? 'Invoice' : 'Payment'}
+                        {tx.type === 'invoice' ? t('finance.invoice') : t('finance.payment')}
                       </span>
                       <span className="text-xs text-muted">{fmtDate(tx.transactionDate)}</span>
                     </div>
@@ -539,7 +540,7 @@ export default function AdminFinance() {
                     )}
                   </div>
 
-                  <div className="text-right shrink-0 flex items-center gap-2">
+                  <div className="text-end shrink-0 flex items-center gap-2">
                     <div>
                       <p className={`text-sm font-bold ${tx.type === 'invoice' ? 'text-red-600' : 'text-green-600'}`}>
                         {tx.type === 'invoice' ? '−' : '+'}{fmt(tx.amount)}
@@ -553,14 +554,14 @@ export default function AdminFinance() {
                           className="flex items-center gap-1 text-xs text-accent hover:underline justify-end mt-0.5"
                         >
                           <ExternalLink className="w-3 h-3" />
-                          Doc
+                          {t('finance.doc')}
                         </a>
                       )}
                     </div>
                     <button
                       onClick={() => handleDeleteTx(tx)}
                       className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-muted hover:text-red-500 hover:bg-red-50 transition-all"
-                      title="Delete"
+                      title={t('finance.deleteTitle')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -570,8 +571,8 @@ export default function AdminFinance() {
               {transactions.length > 20 && (
                 <div className="px-5 py-3 text-center">
                   <span className="text-xs text-muted flex items-center justify-center gap-1">
-                    <ChevronRight className="w-3 h-3" />
-                    {transactions.length - 20} more transactions
+                    <ChevronRight className="w-3 h-3 rtl:rotate-180" />
+                    {t('finance.moreTransactions', { count: transactions.length - 20 })}
                   </span>
                 </div>
               )}

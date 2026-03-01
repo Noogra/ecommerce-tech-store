@@ -1,23 +1,25 @@
+import { useTranslation } from 'react-i18next';
+
 const STOCK_CONFIG = {
   outOfStock: {
     color: 'bg-red-50 text-red-700 border-red-200',
     icon: '❌',
-    label: 'Out of Stock'
+    labelKey: 'stockStatus.outOfStock',
   },
   critical: {
     color: 'bg-red-50 text-red-700 border-red-200',
     icon: '⚠️',
-    label: 'Low Stock'
+    labelKey: 'stockStatus.lowStock',
   },
   low: {
     color: 'bg-yellow-50 text-yellow-700 border-yellow-200',
     icon: '⚡',
-    label: 'Limited'
+    labelKey: 'stockStatus.limited',
   },
   normal: {
     color: 'bg-green-50 text-green-700 border-green-200',
     icon: '✅',
-    label: 'In Stock'
+    labelKey: 'stockStatus.inStock',
   },
 };
 
@@ -29,6 +31,7 @@ function getStockLevel(quantity) {
 }
 
 export default function StockBadge({ quantity, size = 'sm' }) {
+  const { t } = useTranslation();
   const level = getStockLevel(quantity);
   const config = STOCK_CONFIG[level];
 
@@ -41,7 +44,7 @@ export default function StockBadge({ quantity, size = 'sm' }) {
   return (
     <span className={`inline-flex items-center gap-1.5 font-medium rounded-full border ${config.color} ${sizeClasses[size]}`}>
       <span>{config.icon}</span>
-      <span>{config.label}</span>
+      <span>{t(config.labelKey)}</span>
       {quantity > 0 && <span className="opacity-70">({quantity})</span>}
     </span>
   );

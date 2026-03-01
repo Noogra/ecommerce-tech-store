@@ -4,11 +4,13 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { fetchProducts, deleteProduct } from '../../api/products';
 import { useAuth } from '../../context/AuthContext';
 import StockBadge from '../../components/admin/StockBadge';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { token } = useAuth();
+  const { t } = useTranslation();
 
   const loadProducts = () => {
     setLoading(true);
@@ -20,7 +22,7 @@ export default function AdminProducts() {
   useEffect(loadProducts, []);
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    if (!window.confirm(t('adminProducts.deleteConfirm', { name }))) return;
     await deleteProduct(id, token);
     loadProducts();
   };
@@ -28,13 +30,13 @@ export default function AdminProducts() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-primary">Products</h1>
+        <h1 className="text-2xl font-bold text-primary">{t('adminProducts.title')}</h1>
         <Link
           to="/admin/products/new"
           className="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white font-medium text-sm px-5 py-2.5 rounded-xl transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Add Product
+          {t('adminProducts.addBtn')}
         </Link>
       </div>
 
@@ -47,22 +49,22 @@ export default function AdminProducts() {
           </div>
         ) : products.length === 0 ? (
           <div className="p-12 text-center text-muted">
-            <p className="text-lg font-medium">No products yet</p>
-            <p className="text-sm mt-1">Add your first product to get started.</p>
+            <p className="text-lg font-medium">{t('adminProducts.noProducts')}</p>
+            <p className="text-sm mt-1">{t('adminProducts.noProductsSub')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">ID</th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Product</th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Brand</th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Category</th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Price</th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Stock</th>
-                  <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Featured</th>
-                  <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Actions</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colId')}</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colProduct')}</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colBrand')}</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colCategory')}</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colPrice')}</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colStock')}</th>
+                  <th className="text-start text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colFeatured')}</th>
+                  <th className="text-end text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">{t('adminProducts.colActions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -80,7 +82,7 @@ export default function AdminProducts() {
                     <td className="px-6 py-4 text-sm font-semibold text-primary">${p.price}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-primary">{p.stock_quantity} units</span>
+                        <span className="text-sm font-medium text-primary">{p.stock_quantity} {t('adminProducts.units')}</span>
                         <StockBadge quantity={p.stock_quantity} size="sm" />
                       </div>
                     </td>
@@ -88,7 +90,7 @@ export default function AdminProducts() {
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                         p.featured ? 'bg-amber-50 text-amber-600' : 'bg-gray-50 text-gray-400'
                       }`}>
-                        {p.featured ? 'Yes' : 'No'}
+                        {p.featured ? t('adminProducts.yes') : t('adminProducts.no')}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -96,14 +98,14 @@ export default function AdminProducts() {
                         <Link
                           to={`/admin/products/${p.id}/edit`}
                           className="p-2 text-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
-                          title="Edit"
+                          title={t('adminProducts.editTitle')}
                         >
                           <Pencil className="w-4 h-4" />
                         </Link>
                         <button
                           onClick={() => handleDelete(p.id, p.name)}
                           className="p-2 text-muted hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
+                          title={t('adminProducts.deleteTitle')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
